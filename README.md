@@ -1,6 +1,6 @@
 # Home Assistant Add-ons: Track to ICS Calendar
 
-[![Open your Home Assistant instance and show the add add-on repository dialog with this repository pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fbcarver%2Fha-track-to-ics)
+[![Open your Home Assistant instance and show the add add-on repository dialog with this repository pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fbencarver%2Fha-track-to-ics)
 
 ## Add-ons
 
@@ -20,7 +20,7 @@ Downloads reservations from Track Property Management and serves them as an ICS 
 
 1. Click the button above, or manually add this repository URL to your Home Assistant add-on store:
    ```
-   https://github.com/bcarver/ha-track-to-ics
+   https://github.com/bencarver/ha-track-to-ics
    ```
 
 2. Find "Track to ICS Calendar" in the add-on store and install it
