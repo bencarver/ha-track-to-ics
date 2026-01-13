@@ -567,15 +567,17 @@ def index():
             <h2>Calendar URL for Rental Control</h2>
             <p><strong>Use this URL in the Rental Control integration:</strong></p>
             <div class="url-box" id="local-url" onclick="copyLocalUrl()" style="cursor: pointer;" title="Click to copy">
-                https://homeassistant.local:8099/calendar.ics
+                https://local-track-to-ics:8443/calendar.ics
             </div>
             <p style="margin-top: 12px;">
                 <button onclick="copyLocalUrl()" class="btn" style="padding: 8px 16px; font-size: 14px;">📋 Copy URL for Rental Control</button>
                 <span id="copy-local-status" style="margin-left: 10px; color: #95d5b2; display: none;">✓ Copied!</span>
             </p>
             <p style="margin-top: 8px; color: #aaa; font-size: 13px;">
-                ℹ️ This add-on uses a self-signed SSL certificate.<br>
-                Rental Control should accept it for local HTTPS connections.
+                ℹ️ HTTPS on port 8443 with self-signed certificate. Alternative hostnames:<br>
+                <code style="font-size: 11px;">local-track-to-ics</code> · 
+                <code style="font-size: 11px;">track_to_ics</code> · 
+                <code style="font-size: 11px;">homeassistant.local</code>
             </p>
             
             <h3 style="margin-top: 24px; color: #7b2cbf; font-size: 16px;">Remote Browser Access</h3>
@@ -603,7 +605,7 @@ def index():
                 }
                 
                 function copyLocalUrl() {
-                    const url = 'https://homeassistant.local:8099/calendar.ics';
+                    const url = 'https://local-track-to-ics:8443/calendar.ics';
                     navigator.clipboard.writeText(url).then(function() {
                         const status = document.getElementById('copy-local-status');
                         status.style.display = 'inline';
@@ -743,6 +745,7 @@ def main():
     
     import os
     import subprocess
+    from threading import Thread
     
     if not os.path.exists(cert_dir):
         os.makedirs(cert_dir)
@@ -751,7 +754,7 @@ def main():
         logger.info("Generating self-signed SSL certificate...")
         try:
             subprocess.run([
-                'openssl', 'req', '-x509', '-newkey', 'rsa:4096',
+                'openssl', 'req', '-x509', '-newkey', 'rsa:2048',
                 '-keyout', key_file, '-out', cert_file,
                 '-days', '365', '-nodes',
                 '-subj', '/CN=track-to-ics/O=HomeAssistant/C=US'
@@ -759,19 +762,23 @@ def main():
             logger.info("SSL certificate generated successfully")
         except Exception as e:
             logger.error(f"Failed to generate SSL certificate: {e}")
-            logger.info("Falling back to HTTP...")
             cert_file = None
             key_file = None
     
-    # Start Flask server with HTTPS
-    logger.info("Starting web server on port 8099...")
+    # Start HTTPS server on port 8443 in a separate thread
     if cert_file and key_file and os.path.exists(cert_file):
-        logger.info("Running with HTTPS (self-signed certificate)")
-        app.run(host='0.0.0.0', port=8099, debug=False, threaded=True,
-                ssl_context=(cert_file, key_file))
-    else:
-        logger.info("Running with HTTP (no SSL)")
-        app.run(host='0.0.0.0', port=8099, debug=False, threaded=True)
+        def run_https():
+            logger.info("Starting HTTPS server on port 8443...")
+            app.run(host='0.0.0.0', port=8443, debug=False, threaded=True,
+                    ssl_context=(cert_file, key_file), use_reloader=False)
+        
+        https_thread = Thread(target=run_https, daemon=True)
+        https_thread.start()
+        logger.info("HTTPS server started on port 8443 (for Rental Control)")
+    
+    # Start HTTP server on port 8099 (for ingress)
+    logger.info("Starting HTTP server on port 8099 (for ingress)...")
+    app.run(host='0.0.0.0', port=8099, debug=False, threaded=True)
 
 
 if __name__ == '__main__':

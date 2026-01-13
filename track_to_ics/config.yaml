@@ -1,6 +1,6 @@
 name: "Track to ICS Calendar"
 description: "Downloads reservations from Track Property Management and serves them as an ICS calendar for Rental Control"
-version: "1.0.4"
+version: "1.0.5"
 slug: "track_to_ics"
 init: false
 arch:
@@ -13,8 +13,10 @@ startup: application
 boot: auto
 ports:
   8099/tcp: 8099
+  8443/tcp: 8443
 ports_description:
-  8099/tcp: "ICS Calendar Web Server"
+  8099/tcp: "HTTP Web Server (for ingress)"
+  8443/tcp: "HTTPS Web Server (for Rental Control)"
 options:
   track_username: ""
   track_password: ""
