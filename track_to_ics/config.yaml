@@ -1,6 +1,6 @@
 name: "Track to ICS Calendar"
 description: "Downloads reservations from Track Property Management and serves them as an ICS calendar for Rental Control"
-version: "1.0.0"
+version: "1.0.1"
 slug: "track_to_ics"
 init: false
 arch:
@@ -38,6 +38,6 @@ schema:
   include_owner_stays: bool
   include_past_reservations: bool
 webui: "http://[HOST]:[PORT:8099]/"
-ingress: true
-ingress_port: 8099
+ingress: false
 panel_icon: mdi:calendar-export
+host_network: true

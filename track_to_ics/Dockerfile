@@ -29,4 +29,7 @@ COPY run.sh /run.sh
 # Make scripts executable
 RUN chmod a+x /run.sh
 
+# Expose port
+EXPOSE 8099
+
 CMD [ "/run.sh" ]
