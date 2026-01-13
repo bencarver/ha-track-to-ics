@@ -577,8 +577,8 @@ def index():
         
         <div class="card">
             <h2>Actions</h2>
-            <a href="/calendar.ics" class="btn">📥 Download Calendar</a>
-            <a href="/refresh" class="btn secondary">🔄 Force Refresh</a>
+            <a href="calendar.ics" class="btn">📥 Download Calendar</a>
+            <a href="refresh" class="btn secondary">🔄 Force Refresh</a>
         </div>
         
         <div class="card">
@@ -638,20 +638,20 @@ def force_refresh():
     if last_error:
         return f"""
         <html>
-        <head><meta http-equiv="refresh" content="3;url=/"></head>
+        <head><meta http-equiv="refresh" content="3;url=."></head>
         <body style="font-family: sans-serif; padding: 20px; background: #4a1515; color: #f8a5a5;">
         <h2>❌ Refresh Failed</h2>
         <p>{last_error}</p>
-        <p>Redirecting in 3 seconds... <a href="/" style="color: white;">Go back now</a></p>
+        <p>Redirecting in 3 seconds... <a href="." style="color: white;">Go back now</a></p>
         </body></html>
         """
     return f"""
     <html>
-    <head><meta http-equiv="refresh" content="2;url=/"></head>
+    <head><meta http-equiv="refresh" content="2;url=."></head>
     <body style="font-family: sans-serif; padding: 20px; background: #1b4332; color: #95d5b2;">
     <h2>✅ Calendar Refreshed</h2>
     <p>Found {reservation_count} active reservations.</p>
-    <p>Redirecting in 2 seconds... <a href="/" style="color: white;">Go back now</a></p>
+    <p>Redirecting in 2 seconds... <a href="." style="color: white;">Go back now</a></p>
     </body></html>
     """
 
