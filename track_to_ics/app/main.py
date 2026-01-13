@@ -566,13 +566,28 @@ def index():
         <div class="card">
             <h2>Calendar URL</h2>
             <p>Use this URL in the Rental Control integration:</p>
-            <div class="url-box">
-                http://&lt;your-home-assistant-ip&gt;:8099/calendar.ics
+            <div class="url-box" id="calendar-url" onclick="copyUrl()" style="cursor: pointer;" title="Click to copy">
+                Loading...
             </div>
-            <p style="margin-top: 16px; color: #aaa;">
-                💡 If Home Assistant and this add-on are on the same machine, you can use:<br>
-                <code>http://localhost:8099/calendar.ics</code> or <code>http://homeassistant.local:8099/calendar.ics</code>
+            <p style="margin-top: 12px;">
+                <button onclick="copyUrl()" class="btn secondary" style="padding: 8px 16px; font-size: 14px;">📋 Copy URL</button>
+                <span id="copy-status" style="margin-left: 10px; color: #95d5b2; display: none;">✓ Copied!</span>
             </p>
+            <script>
+                function getCalendarUrl() {
+                    return window.location.href.replace(/\/$/, '').replace(/\/+$/, '') + '/calendar.ics';
+                }
+                document.getElementById('calendar-url').textContent = getCalendarUrl();
+                
+                function copyUrl() {
+                    const url = getCalendarUrl();
+                    navigator.clipboard.writeText(url).then(function() {
+                        const status = document.getElementById('copy-status');
+                        status.style.display = 'inline';
+                        setTimeout(function() { status.style.display = 'none'; }, 2000);
+                    });
+                }
+            </script>
         </div>
         
         <div class="card">
