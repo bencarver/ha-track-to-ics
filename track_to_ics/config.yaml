@@ -1,6 +1,6 @@
 name: "Track to ICS Calendar"
 description: "Downloads reservations from Track Property Management and serves them as an ICS calendar for Rental Control"
-version: "1.0.5"
+version: "1.0.6"
 slug: "track_to_ics"
 init: false
 arch:

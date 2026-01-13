@@ -567,17 +567,14 @@ def index():
             <h2>Calendar URL for Rental Control</h2>
             <p><strong>Use this URL in the Rental Control integration:</strong></p>
             <div class="url-box" id="local-url" onclick="copyLocalUrl()" style="cursor: pointer;" title="Click to copy">
-                https://local-track-to-ics:8443/calendar.ics
+                https://{{ hostname }}:8443/calendar.ics
             </div>
             <p style="margin-top: 12px;">
                 <button onclick="copyLocalUrl()" class="btn" style="padding: 8px 16px; font-size: 14px;">📋 Copy URL for Rental Control</button>
                 <span id="copy-local-status" style="margin-left: 10px; color: #95d5b2; display: none;">✓ Copied!</span>
             </p>
             <p style="margin-top: 8px; color: #aaa; font-size: 13px;">
-                ℹ️ HTTPS on port 8443 with self-signed certificate. Alternative hostnames:<br>
-                <code style="font-size: 11px;">local-track-to-ics</code> · 
-                <code style="font-size: 11px;">track_to_ics</code> · 
-                <code style="font-size: 11px;">homeassistant.local</code>
+                ℹ️ HTTPS on port 8443 with self-signed certificate.
             </p>
             
             <h3 style="margin-top: 24px; color: #7b2cbf; font-size: 16px;">Remote Browser Access</h3>
@@ -605,7 +602,7 @@ def index():
                 }
                 
                 function copyLocalUrl() {
-                    const url = 'https://local-track-to-ics:8443/calendar.ics';
+                    const url = 'https://{{ hostname }}:8443/calendar.ics';
                     navigator.clipboard.writeText(url).then(function() {
                         const status = document.getElementById('copy-local-status');
                         status.style.display = 'inline';
@@ -635,6 +632,9 @@ def index():
     </body>
     </html>
     """
+    import socket
+    hostname = socket.gethostname()
+    
     return render_template_string(
         html, 
         last_update=last_update.strftime('%Y-%m-%d %H:%M:%S') if last_update else None,
@@ -647,6 +647,7 @@ def index():
         checkout_time=CONFIG['checkout_time'],
         include_owner_stays='Yes' if CONFIG['include_owner_stays'] else 'No',
         include_past='Yes' if CONFIG['include_past_reservations'] else 'No',
+        hostname=hostname,
     )
 
 
