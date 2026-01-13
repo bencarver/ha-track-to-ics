@@ -5,7 +5,8 @@ FROM $BUILD_FROM
 RUN apk add --no-cache \
     python3 \
     py3-pip \
-    tzdata
+    tzdata \
+    openssl
 
 # Set working directory
 WORKDIR /app
