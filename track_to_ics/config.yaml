@@ -1,6 +1,6 @@
 name: "Track to ICS Calendar"
 description: "Downloads reservations from Track Property Management and serves them as an ICS calendar for Rental Control"
-version: "1.0.6"
+version: "1.0.7"
 slug: "track_to_ics"
 init: false
 arch:
@@ -28,6 +28,8 @@ options:
   timezone: "America/Denver"
   include_owner_stays: false
   include_past_reservations: false
+  notify_on_error: true
+  notify_cooldown_minutes: 15
 schema:
   track_username: str
   track_password: password
@@ -39,7 +41,10 @@ schema:
   timezone: str
   include_owner_stays: bool
   include_past_reservations: bool
+  notify_on_error: bool
+  notify_cooldown_minutes: int(1,1440)
 webui: "http://[HOST]:[PORT:8099]/"
 ingress: true
 ingress_port: 8099
 panel_icon: mdi:calendar-export
+homeassistant_api: true

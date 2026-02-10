@@ -39,6 +39,7 @@ Downloads reservations from Track Property Management and serves them as an ICS 
 - Automatic refresh at configurable intervals
 - Filters out past reservations and owner stays (configurable)
 - Modern web UI for status monitoring
+- Optional Home Assistant event on fetch errors so you can automate notifications (mobile, email, etc.)
 
 [aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
 [amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg

@@ -16,6 +16,19 @@ Downloads reservations from Track Property Management and serves them as an ICS 
 | `timezone` | Timezone for events | `America/Denver` |
 | `include_owner_stays` | Include "Owner Stay" events | `false` |
 | `include_past_reservations` | Include past reservations | `false` |
+| `notify_on_error` | Fire a Home Assistant event when a fetch fails (so you can automate notifications) | `true` |
+| `notify_cooldown_minutes` | Minimum minutes between error notifications to avoid spamming | `15` |
+
+### Error notifications
+
+When a reservation fetch fails (e.g. login or network error), the add-on can fire a Home Assistant event. No URL or token needed—the add-on uses the Supervisor API.
+
+1. Leave **Notify on error** enabled (default).
+2. Create an automation in Home Assistant:
+   - **Trigger:** Event → Event type: `track_to_ics.fetch_error`
+   - **Action:** Notify (e.g. "Notify mobile app" or "Persistent notification") with message: `Track to ICS: {{ trigger.event.data.error }}`
+
+Notifications are rate-limited by **Notify cooldown minutes** so repeated failures do not spam you.
 
 ## Usage
 

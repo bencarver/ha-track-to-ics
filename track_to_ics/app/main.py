@@ -36,6 +36,7 @@ current_calendar_ics = None
 last_update = None
 last_error = None
 reservation_count = 0
+last_notify_time = None  # for rate-limiting error notifications
 
 # Configuration from environment
 CONFIG = {
@@ -49,7 +50,46 @@ CONFIG = {
     'timezone': os.environ.get('TIMEZONE', 'America/Denver'),
     'include_owner_stays': os.environ.get('INCLUDE_OWNER_STAYS', 'false').lower() == 'true',
     'include_past_reservations': os.environ.get('INCLUDE_PAST_RESERVATIONS', 'false').lower() == 'true',
+    'notify_on_error': os.environ.get('NOTIFY_ON_ERROR', 'true').lower() == 'true',
+    'notify_cooldown_minutes': int(os.environ.get('NOTIFY_COOLDOWN_MINUTES', '15')),
 }
+
+
+def notify_ha_error(error_message: str) -> None:
+    """
+    Fire a Home Assistant event when a fetch error occurs, via the Supervisor
+    API (no user token needed). Rate-limited by notify_cooldown_minutes.
+    """
+    global last_notify_time
+
+    if not CONFIG.get('notify_on_error'):
+        return
+    token = (os.environ.get('SUPERVISOR_TOKEN') or '').strip()
+    if not token:
+        logger.debug("SUPERVISOR_TOKEN not available (not running as add-on?)")
+        return
+
+    cooldown_minutes = CONFIG.get('notify_cooldown_minutes', 15)
+    if last_notify_time is not None:
+        elapsed = (datetime.now() - last_notify_time).total_seconds()
+        if elapsed < cooldown_minutes * 60:
+            logger.debug("Skipping HA notify: still within cooldown")
+            return
+
+    event_url = 'http://supervisor/core/api/events/track_to_ics.fetch_error'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json',
+    }
+    payload = {'error': error_message, 'addon': 'track_to_ics'}
+
+    try:
+        r = requests.post(event_url, json=payload, headers=headers, timeout=10)
+        r.raise_for_status()
+        last_notify_time = datetime.now()
+        logger.info("Fired track_to_ics.fetch_error event to Home Assistant")
+    except Exception as e:
+        logger.warning("Could not notify Home Assistant of error: %s", e)
 
 
 class TrackClient:
@@ -397,6 +437,7 @@ def refresh_calendar():
     except Exception as e:
         last_error = str(e)
         logger.error(f"Error refreshing calendar: {e}")
+        notify_ha_error(last_error)
 
 
 # Flask routes
@@ -720,7 +761,11 @@ def main():
     logger.info(f"Refresh interval: {CONFIG['refresh_interval']} minutes")
     logger.info(f"Include owner stays: {CONFIG['include_owner_stays']}")
     logger.info(f"Include past reservations: {CONFIG['include_past_reservations']}")
-    
+    if CONFIG.get('notify_on_error'):
+        logger.info(f"Error notifications: enabled (cooldown {CONFIG['notify_cooldown_minutes']} min)")
+    else:
+        logger.info("Error notifications: disabled")
+
     # Validate configuration
     if not CONFIG['track_username'] or not CONFIG['track_password']:
         logger.warning("⚠️  Track credentials not configured. Please configure the add-on.")

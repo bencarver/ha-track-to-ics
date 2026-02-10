@@ -11,6 +11,8 @@ export CHECKOUT_TIME=$(bashio::config 'checkout_time')
 export TIMEZONE=$(bashio::config 'timezone')
 export INCLUDE_OWNER_STAYS=$(bashio::config 'include_owner_stays')
 export INCLUDE_PAST_RESERVATIONS=$(bashio::config 'include_past_reservations')
+export NOTIFY_ON_ERROR=$(bashio::config 'notify_on_error')
+export NOTIFY_COOLDOWN_MINUTES=$(bashio::config 'notify_cooldown_minutes')
 
 bashio::log.info "============================================="
 bashio::log.info "Starting Track to ICS Calendar Add-on"
