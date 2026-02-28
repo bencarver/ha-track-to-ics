@@ -284,8 +284,8 @@ def parse_track_csv(csv_content: str) -> list:
                     logger.debug(f"Skipping past reservation: {reservation['guest_name']} (checkout: {checkout_date})")
                     continue
             
-            # Filter out "Checked Out" status
-            if reservation['status'] == 'Checked Out':
+            # Filter out "Checked Out" status (unless including past reservations)
+            if reservation['status'] == 'Checked Out' and not CONFIG['include_past_reservations']:
                 logger.debug(f"Skipping checked out reservation: {reservation['guest_name']}")
                 continue
             
